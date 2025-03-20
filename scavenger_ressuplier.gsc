@@ -36,9 +36,6 @@ OnPlayerSpawned()
     }
 }
 
-/*
-Handle Scavenger pickups to resupply secondary weapons, lethals, and tacticals
-*/
 OnScavengerPickup()
 {
     self endon("disconnect");
@@ -46,19 +43,15 @@ OnScavengerPickup()
 
     for (;;)
     {
-        // Wait for the player to pick up a Scavenger bag
         self waittill("scavenger_pickup");
 
-        // Resupply primary weapon ammo (default behavior)
         self GiveMaxAmmo();
 
-        // Resupply secondary weapon ammo
         if (self HasWeapon(self GetCurrentOffhand()))
         {
             self GiveMaxAmmo(self GetCurrentOffhand());
         }
 
-        // Resupply lethal grenades
         if (self GetWeaponAmmoStock("frag_grenade_mp") < 1)
         {
             self SetWeaponAmmoStock("frag_grenade_mp", 1);
@@ -83,10 +76,6 @@ OnScavengerPickup()
         {
             self SetWeaponAmmoStock("c4_mp", 1);
         }
-
-	
-
-        // Resupply tactical grenades
         if (self GetWeaponAmmoStock("flash_grenade_mp") < 1)
         {
             self SetWeaponAmmoStock("flash_grenade_mp", 1);
@@ -114,6 +103,30 @@ OnScavengerPickup()
 	if (self GetWeaponAmmoStock("portable_radar_mp") < 1)
         {
             self SetWeaponAmmoStock("portable_radar_mp", 1);
+        }
+
+        self thread ResupplyLaunchers();
+    }
+}
+
+ResupplyLaunchers()
+{
+    launchers = [
+        "m320_mp",
+        "rpg_mp",
+        "iw5_smaw_mp",
+        "stinger_mp",
+        "xm25_mp",
+        "javelin_mp"
+    ];
+
+    for (i = 0; i < launchers.size; i++)
+    {
+        weapon = launchers[i];
+
+        if (self HasWeapon(weapon))
+        {
+            self GiveMaxAmmo(weapon);
         }
     }
 }
